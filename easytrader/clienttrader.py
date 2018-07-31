@@ -116,16 +116,35 @@ class ClientTrader(IClientTrader):
             path=connect_path, timeout=10
         )
         self._close_prompt_windows()
-        self._main = self._app.top_window()
+
+        self._main = self._app.window_(title_re="网上股票交易系统")
+        self._main.wait('exists enabled visible ready')
+        
+        self._main_handle = self._main.handle
+        
+        self._left_treeview = self._main.window_(control_id=129, class_name="SysTreeView32") 
+        self._left_treeview.wait('exists enabled visible ready')
+        
+        self._pwindow = self._main.window(control_id=59649, class_name='#32770')
+        self._pwindow.wait('exists enabled visible ready')
         
     # check top_window
     def _check_top_window(self):
-        """只需要3ms"""
+        """需要6ms"""
         c = 0
-        while c < 20 and self._app.top_window().handle != self._main_handle:
+        test_0 = self._main.wrapper_object()
+        test_1 = self._app.top_window().wrapper_object()
+        while c < 5 and test_1 != test_0:
             c += 1
-            self._app.top_window().close()
+            test_1.close()
+            test_1 = self._app.top_window().wrapper_object()
             
+    def _close_prompt_windows(self):
+        """功能同_check_top_window, 需要2ms"""
+        for w in self._app.windows(class_name="#32770"):
+            if "网上交易系统" not in w.window_text():
+                w.close()
+        
     @property
     def broker_type(self):
         return "ths"
@@ -405,13 +424,6 @@ class ClientTrader(IClientTrader):
 
     def exit(self):
         self._app.kill()
-
-    def _close_prompt_windows(self):
-        self.wait(1)
-        for w in self._app.windows(class_name="#32770"):
-            if w.window_text() != self._config.TITLE:
-                w.close()
-        self.wait(1)
 
     def trade(self, security, price, amount):
         a = time.time()
