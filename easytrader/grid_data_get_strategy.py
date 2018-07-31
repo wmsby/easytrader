@@ -45,25 +45,44 @@ class CopyStrategy(BaseStrategy):
     """
     def get(self, control_id: int):
         grid = self._get_grid(control_id)
-        content = ''
-        try:
-            # grid.RightClick(coords=(50, 50))
-            # grid.TypeKeys(r"c")
+        count_1 = 0
+        count_2 = 0
+        count_3 = 0
+        while True:
+            content = ''
+            try:
+                # grid.RightClick(coords=(50, 50))
+                # grid.TypeKeys(r"c")
 
-            # grid.wait('ready', 0.2)
-            # grid.TypeKeys(r"^a")
-
-            grid.TypeKeys(r"^c")
-            time.sleep(0.02)
-            content = pywinauto.clipboard.GetData()
-        except Exception as e:
-            log.warning("{}, retry ......".format(e))  
-
+                # grid.wait('ready', 0.2)
+                # grid.TypeKeys(r"^a")
+                grid.TypeKeys(r"^c")
+                time.sleep(0.05)
+                content = pywinauto.clipboard.GetData()
+                if '\n' in content:    # 读取成功, 直接跳出
+                    break
+                elif content != '':    # 只读取到表头，count_1 += 1
+                    log.warning('只读取到表头{}'.format(count_1))
+                    time.sleep(0.15)
+                    count_1 += 1
+                else:                  # 读取失败，还是''，count_2 += 1
+                    log.warning('读空{}'.format(count_2))
+                    time.sleep(0.15)
+                    count_2 += 1
+            except Exception as e:
+                count_3 += 1
+                time.sleep(0.15)
+                log.warning("{}, retry ......".format(e))  
+                
+            # 只有读取成功两次或失败两次才跳出循环
+            if count_1 == 2 or count_2 == 2 or count_3 == 2:
+                break 
+                
         if content == '':
             return None
         else:
             return self._format_grid_data(content)
-
+        
     def _format_grid_data(self, data: str) -> dict:
         try:
             df = pd.read_csv(
