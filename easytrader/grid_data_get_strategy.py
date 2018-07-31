@@ -51,9 +51,11 @@ class CopyStrategy(BaseStrategy):
         while True:
             content = ''
             try:
-                grid.wait('ready', 0.2)
-                grid.TypeKeys(r"^a")
-                grid.TypeKeys(r"^c")
+                grid.RightClickInput(coords=(50, 50))
+                grid.TypeKeys(r"c")
+#                 grid.wait('ready', 0.2)
+#                 grid.TypeKeys(r"^a")
+#                 grid.TypeKeys(r"^c")
                 time.sleep(0.05)
                 content = pywinauto.clipboard.GetData()
                 if '\n' in content:    # 读取成功, 直接跳出
