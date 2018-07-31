@@ -149,6 +149,77 @@ class ClientTrader(IClientTrader):
     def broker_type(self):
         return "ths"
 
+    @functools.lru_cache()
+    def _get_left_treeview_ready(self):
+        for c in range(20):
+            try:
+                self._left_treeview.wait("ready", 1)
+                break
+            except:
+                print('_left_treeview.wait Exception')
+                self._bring_main_foreground()
+                self._check_top_window()
+            
+    def _switch_left_menus(self, path):
+        test = ''.join(path)
+        if 'F1' in test:
+            self._main.TypeKeys("{F1}")
+        elif 'F2' in test:
+            self._main.TypeKeys("{F2}")
+        elif 'F3' in test:
+            self._main.TypeKeys("{F3}")
+        elif 'F4' in test and '资金股' in test:
+            self._main.TypeKeys("{F4}")
+        elif 'F5' in test:
+            self._main.TypeKeys("{F5}")
+        elif 'F6' in test:
+            self._main.TypeKeys("{F6}")
+        else:
+            for c in range(5):
+                try:
+                    self._get_left_treeview_ready()
+                    if not self._left_treeview.IsSelected(path):
+                        self._left_treeview.Select(path)
+                    else:
+                        break
+                except Exception:
+                    print('switch_left_menus Exception')
+                    self._bring_main_foreground()  
+                    time.sleep(0.2)
+
+    def _bring_main_foreground(self):
+        self._main.Minimize()
+        time.sleep(0.02)
+        self._main.Restore()
+        time.sleep(0.02)
+        shell = win32com.client.Dispatch("WScript.Shell")
+        time.sleep(0.02)
+        shell.SendKeys('%')
+        time.sleep(0.01)
+        pywinauto.win32functions.SetForegroundWindow(self._main.wrapper_object())    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     @property
     def balance(self):
         self._switch_left_menus(self._config.BALANCE_MENU_PATH)
@@ -157,9 +228,9 @@ class ClientTrader(IClientTrader):
     def _get_balance_from_statics(self):
         result = {}
         for key, control_id in self._config.BALANCE_CONTROL_ID_GROUP.items():
-            ww = self._main.window(control_id=control_id, class_name="Static")
+            ww = self._pwindow.window(control_id=control_id, class_name="Static")
             count = 0
-            for c in range(100):
+            for c in range(20):
                 try:
                     test = float(ww.window_text())
                     # 如果股票市值为0, 要多试一下!
@@ -556,56 +627,6 @@ class ClientTrader(IClientTrader):
             except Exception as e:
                 print('type:', text, e)
         
-    @functools.lru_cache()
-    def _get_left_treeview_ready(self):
-        for c in range(20):
-            try:
-                self._left_treeview.wait("ready", 1)
-                break
-            except:
-                print('_left_treeview.wait Exception')
-                self._bring_main_foreground()
-                self._check_top_window()
-            
-    def _switch_left_menus(self, path, sleep=0.2):
-        test = ''.join(path)
-        if 'F1' in test:
-            self._main.TypeKeys("{F1}")
-        elif 'F2' in test:
-            self._main.TypeKeys("{F2}")
-        elif 'F3' in test:
-            self._main.TypeKeys("{F3}")
-        elif 'F4' in test:
-            self._main.TypeKeys("{F4}")
-        elif 'F6' in test:
-            self._main.TypeKeys("{F6}")
-        else:
-            for c in range(5):
-                try:
-                    self._get_left_treeview_ready()
-                    if not self._left_treeview.IsSelected(path):
-                        self._left_treeview.Select(path)
-                    else:
-                        break
-                except Exception:
-                    print('switch_left_menus Exception')
-                    self._bring_main_foreground()  
-                    time.sleep(0.2)
-
-    def _bring_main_foreground(self):
-        self._main.Minimize()
-        time.sleep(0.02)
-        self._main.Restore()
-        time.sleep(0.02)
-        shell = win32com.client.Dispatch("WScript.Shell")
-        time.sleep(0.02)
-        shell.SendKeys('%')
-        time.sleep(0.01)
-        pywinauto.win32functions.SetForegroundWindow(self._main.wrapper_object())  
-        
-    def _switch_left_menus_by_shortcut(self, shortcut, sleep=0.5):
-        self._app.top_window().type_keys(shortcut)
-        self.wait(sleep)
 
     def _cancel_entrust_by_double_click(self, row):
         x = self._config.CANCEL_ENTRUST_GRID_LEFT_MARGIN
@@ -620,7 +641,6 @@ class ClientTrader(IClientTrader):
 
     def _refresh(self):
         self._main.TypeKeys("{F5}")
-        # self._switch_left_menus(["买入[F1]"], sleep=0.05)  
         
                 
     def _handle_pop_dialogs(
