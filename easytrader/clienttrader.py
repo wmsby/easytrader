@@ -226,6 +226,7 @@ class ClientTrader(IClientTrader):
     # 注意，各大券商此接口重写，统一输出
     @property
     def position(self):
+        self._check_top_window()
         for c in range(2):
             self._switch_left_menus(["查询[F4]", "资金股票"])
             test = self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
@@ -241,6 +242,7 @@ class ClientTrader(IClientTrader):
     # 注意，各大券商此接口重写，统一输出
     @property
     def today_entrusts(self):
+        self._check_top_window()
         for c in range(2):
             self._switch_left_menus(["查询[F4]", "当日委托"])
             test = self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
@@ -256,6 +258,7 @@ class ClientTrader(IClientTrader):
     # 注意，各大券商此接口重写，统一输出
     @property
     def today_trades(self):
+        self._check_top_window()
         for c in range(2):
             self._switch_left_menus(["查询[F4]", "当日成交"])
             test = self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
@@ -271,6 +274,7 @@ class ClientTrader(IClientTrader):
     # 注意，各大券商此接口重写，统一输出   
     @property
     def cancel_entrusts(self):
+        self._check_top_window()
         self._refresh()
         for c in range(2):
             self._switch_left_menus(["撤单[F3]"])
@@ -285,7 +289,8 @@ class ClientTrader(IClientTrader):
         return test
     
     def cancel_entrust(self, entrust_no):
-        """entrust_no: str"""
+        """entrust_no: str, 本接口尚未严格测试!"""
+        self._check_top_window()
         self._refresh()
         test = self.cancel_entrusts
         for i, entrust in enumerate(test):
@@ -298,8 +303,17 @@ class ClientTrader(IClientTrader):
         else:
             return {"message": "委托单状态错误不能撤单, 该委托单可能已经成交或者已撤"}
 
-        
-        
+    def trade(self, action, security, price, amount, atype='MARKET', ptype='最优五档成交剩余撤销', **kwargs):
+        """
+        action   : str, 'BUY' or 'SELL'
+        security : str, 股票代码
+        price    : str, 交易价格
+        amount   : str, 交易数量
+        atype    : str, 'MARKET' or 'LIMIT'
+        ptype    : str, 委托类型
+        """
+        a = time.time()
+        pass
         
         
         
@@ -309,6 +323,8 @@ class ClientTrader(IClientTrader):
         
     def buy(self, security, price, amount, **kwargs):
         a = time.time()
+        
+        self._check_top_window()
         self._switch_left_menus(["买入[F1]"])
         print('000 ..._switch_left_menus', time.time()-a)
 
@@ -321,6 +337,82 @@ class ClientTrader(IClientTrader):
 
         return self.trade(security, price, amount)
 
+    def trade(self, security, price, amount):
+        a = time.time()
+        self._set_trade_params(security, price, amount)
+        print('aaa ..._set_trade_params', time.time()-a)
+        
+        a = time.time()
+        self._submit_trade()
+        print('bbb ..._submit_trade', time.time()-a)
+        
+        a = time.time()
+        test = self._handle_pop_dialogs(handler_class=pop_dialog_handler.TradePopDialogHandler)
+        print('ccc ..._handle_pop_dialogs', time.time()-a)
+
+        return test
+
+    def _click(self, control_id):
+        for c in range(5):
+            try:
+                test = self._main.window(control_id=control_id, class_name="Button")
+                # test.wait("exists visible enabled", 0.05)
+                test.click()
+                break
+            except Exception as e:
+                print("_click", e)
+                self._check_top_window()
+                time.sleep(0.1)
+
+    def _submit_trade(self):
+        # 等待股东账号出现!
+        for c in range(20):
+            try:
+                sss = time.time()
+                selects = self._main.window(
+                    control_id=self._config.TOP_TOOLBAR_CONTROL_ID,
+                    class_name="ToolbarWindow32",
+                ).window(
+                    control_id=self._config.TRADE_ACCOUNT_CONTROL_ID,
+                    class_name="ComboBox",
+                )
+                
+                account = selects.window_text()
+                if len(account) > 5:
+                    # print('----> showup account', account, time.time()-sss)
+                    break
+            except Exception as e:
+                print('等待股东账号出现', e)
+            zzz = time.time()
+            if (zzz-sss) < 0.05:
+                time.sleep(0.05-(zzz-sss))
+                print("retry 等待股东账号出现")
+        
+        for c in range(5):
+            try:
+                test = self._pwindow.window(control_id=self._config.TRADE_SUBMIT_CONTROL_ID, class_name="Button")
+                # test.wait("exists visible enabled", 0.05)
+                test.click()
+                break
+            except Exception as e:
+                print("submit_click", e)
+                self._check_top_window()
+                time.sleep(0.1)
+
+    def _set_trade_params(self, security, price, amount):
+        code = security[-6:]
+        self._type_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
+
+        self._type_keys(
+            self._config.TRADE_PRICE_CONTROL_ID,
+            easyutils.round_price_by_code(price, code),
+        )
+        
+        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
+        
+        self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
+    
+    
     def market_buy(self, security, amount, ttype=u'最优五档成交剩余撤销', **kwargs):
         """
         市价买入
@@ -463,80 +555,7 @@ class ClientTrader(IClientTrader):
     def exit(self):
         self._app.kill()
 
-    def trade(self, security, price, amount):
-        a = time.time()
-        self._set_trade_params(security, price, amount)
-        print('aaa ..._set_trade_params', time.time()-a)
-        
-        a = time.time()
-        self._submit_trade()
-        print('bbb ..._submit_trade', time.time()-a)
-        
-        a = time.time()
-        test = self._handle_pop_dialogs(handler_class=pop_dialog_handler.TradePopDialogHandler)
-        print('ccc ..._handle_pop_dialogs', time.time()-a)
 
-        return test
-
-    def _click(self, control_id):
-        for c in range(5):
-            try:
-                test = self._main.window(control_id=control_id, class_name="Button")
-                # test.wait("exists visible enabled", 0.05)
-                test.click()
-                break
-            except Exception as e:
-                print("_click", e)
-                self._check_top_window()
-                time.sleep(0.1)
-
-    def _submit_trade(self):
-        # 等待股东账号出现!
-        for c in range(20):
-            try:
-                sss = time.time()
-                selects = self._main.window(
-                    control_id=self._config.TOP_TOOLBAR_CONTROL_ID,
-                    class_name="ToolbarWindow32",
-                ).window(
-                    control_id=self._config.TRADE_ACCOUNT_CONTROL_ID,
-                    class_name="ComboBox",
-                )
-                
-                account = selects.window_text()
-                if len(account) > 5:
-                    # print('----> showup account', account, time.time()-sss)
-                    break
-            except Exception as e:
-                print('等待股东账号出现', e)
-            zzz = time.time()
-            if (zzz-sss) < 0.05:
-                time.sleep(0.05-(zzz-sss))
-                print("retry 等待股东账号出现")
-        
-        for c in range(5):
-            try:
-                test = self._pwindow.window(control_id=self._config.TRADE_SUBMIT_CONTROL_ID, class_name="Button")
-                # test.wait("exists visible enabled", 0.05)
-                test.click()
-                break
-            except Exception as e:
-                print("submit_click", e)
-                self._check_top_window()
-                time.sleep(0.1)
-
-    def _set_trade_params(self, security, price, amount):
-        code = security[-6:]
-        self._type_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
-
-        self._type_keys(
-            self._config.TRADE_PRICE_CONTROL_ID,
-            easyutils.round_price_by_code(price, code),
-        )
-        
-        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
-        
-        self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
 
 
     def _set_market_trade_params(self, security, amount):
