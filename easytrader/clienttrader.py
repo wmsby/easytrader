@@ -140,7 +140,7 @@ class ClientTrader(IClientTrader):
             test_1 = self._app.top_window().wrapper_object()
             
     def _close_prompt_windows(self):
-        """功能同_check_top_window, 需要2ms"""
+        """功能同_check_top_window, 需要2ms, 不太可靠"""
         for w in self._app.windows(class_name="#32770"):
             if "网上交易系统" not in w.window_text():
                 w.close()
