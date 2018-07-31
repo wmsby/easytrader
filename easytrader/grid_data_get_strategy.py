@@ -63,15 +63,15 @@ class CopyStrategy(BaseStrategy):
                     break
                 elif content != '':    # 只读取到表头，count_1 += 1
                     log.warning('只读取到表头{}'.format(count_1))
-                    time.sleep(0.15)
+                    time.sleep(0.2)
                     count_1 += 1
                 else:                  # 读取失败，还是''，count_2 += 1
                     log.warning('读空{}'.format(count_2))
-                    time.sleep(0.15)
+                    time.sleep(0.2)
                     count_2 += 1
             except Exception as e:
                 count_3 += 1
-                time.sleep(0.15)
+                time.sleep(0.2)
                 log.warning("{}, retry ......".format(e))  
                 
             # 只有读取成功两次或失败两次才跳出循环
