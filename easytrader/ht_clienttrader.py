@@ -118,7 +118,7 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
     def _get_balance_from_statics(self):
         result = {}
         for key, control_id in self._config.BALANCE_CONTROL_ID_GROUP.items():
-            ww = self._main.window(control_id=control_id, class_name="Static")
+            ww = self._pwindow.window(control_id=control_id, class_name="Static")
             count = 0
             for c in range(100):
                 try:
@@ -144,7 +144,7 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
         self._switch_left_menus(self._config.BALANCE_MENU_PATH)
         result = {}
         for key, control_id in self._config.BALANCE_CONTROL_ID_GROUP.items():
-            ww = self._main.window(control_id=control_id, class_name="Static")
+            ww = self._pwindow.window(control_id=control_id, class_name="Static")
             count = 0
             for c in range(30):
                 try:
