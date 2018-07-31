@@ -4,24 +4,7 @@
 [![Travis](https://img.shields.io/travis/shidenggui/easytrader.svg)](https://travis-ci.org/shidenggui/easytrader)
 [![License](https://img.shields.io/github/license/shidenggui/easytrader.svg)](https://github.com/shidenggui/easytrader/blob/master/LICENSE)
 
-基于easytrader的二次开发、使用快速版本。
-
-仅优化和维护以下功能： 买入卖出、市价买入卖出、查询余额、查询持仓、自动打新、逆回购。
-
-交易设置：
-
-1. 默认买入/卖出的价格、数量设置----空
-
-2. 买卖时默认查可撤委托----否
-
-3. 委托价格超出涨跌停是否提示----否
-
-4. 卖出后是否查询股票----否
-
-
-
-
-取消 委托前弹窗和撤单前弹窗，可加快速度!
+基于easytrader的二次开发
 
 
 * 进行自动的程序化股票交易
