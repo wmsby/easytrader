@@ -102,7 +102,7 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
                 path=self._run_exe_path(exe_path), timeout=10
             )
         for c in range(10):
-            self._close_prompt_windows()   
+              
             self._main = self._app.window_(title_re="网上股票交易系统")
             try:
                 self._main.wait('exists enabled visible ready', 2)
@@ -111,6 +111,7 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
             except:
                 self._switch_window_to_normal_mode()
                 time.sleep(3)
+        self._check_top_window() 
         
         self._left_treeview = self._main.window_(control_id=129, class_name="SysTreeView32") 
         self._left_treeview.wait('exists enabled visible ready')
