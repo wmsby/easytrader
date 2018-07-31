@@ -13,6 +13,7 @@ from . import grid_data_get_strategy
 from . import helpers
 from . import pop_dialog_handler
 from .config import client
+from .log import log
 
 if not sys.platform.startswith("darwin"):
     import pywinauto
