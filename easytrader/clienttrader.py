@@ -513,10 +513,9 @@ class ClientTrader(IClientTrader):
     def _wait_trade_showup(self, control_id, class_name):
         """class_name: "Static", "Edit", "ComboBox" """
         flag = False
-        for c in range(200):   # 最大等待10s
+        for c in range(10):   # 最大等待10s
             try:
                 sss = time.time()
-                # 交易子窗口
                 for i in self._pwindow.Children():
                     condition =  ( 
                         i.control_id() == control_id and 
@@ -525,22 +524,22 @@ class ClientTrader(IClientTrader):
                     )
                     if condition and class_name != "ComboBox":
                         flag = True
-                        # print('----> showup target', i.window_text(), time.time()-sss)
                         return i     
                     elif condition and class_name == "ComboBox" and '最优五档' in ''.join(i.texts()):
                         flag = True
-                        # print('----> showup target', i.window_text(), time.time()-sss)
                         return i  
                 if flag:
                     break
                 else:
                     print('retry _wait_trade_showup')
+                    gaps = time.time() - sss
+                    if gaps < 0.05:
+                        time.sleep(0.05-gaps)
             except Exception as e:
-                print('_wait_trade_showup', e)
-                
-            gaps = time.time() - sss
-            if gaps < 0.05:
-                time.sleep(0.05-gaps)
+                print('_wait_trade_showup Exception', e)
+                gaps = time.time() - sss
+                if gaps < 0.05:
+                    time.sleep(0.05-gaps)
                 
     def _get_grid_data(self, control_id):
         return self._grid_data_get_strategy.get(control_id)
@@ -569,31 +568,29 @@ class ClientTrader(IClientTrader):
                 self._check_top_window()
             
     def _switch_left_menus(self, path, sleep=0.2):
-        for c in range(20):
-            try:
-                self._get_left_treeview_ready()
-                if not self._left_treeview.IsSelected(path):
-                    self._left_treeview.Select(path)
-                    # raise NameError('HiThere')
-                else:
-                    break
-            except Exception:
-                print('switch_left_menus Exception')
-                self._bring_main_foreground()                
-        
-#         self._get_left_treeview_ready()
-#         c = 0
-#         while c < 20 and (not self._left_treeview.IsSelected(path)):
-#             c += 1
-#             try:
-#                 self._left_treeview.Select(path) 
-#             except Exception:
-#                 print('switch_left_menus Exception')
-#                 self._bring_main_foreground()
-                
-#                 self._get_left_treeview_ready()
-#                 self._left_treeview.Select(path) 
-#             time.sleep(0.05)
+        test = ''.join(path)
+        if 'F1' in test:
+            self._main.TypeKeys("{F1}")
+        elif 'F2' in test:
+            self._main.TypeKeys("{F2}")
+        elif 'F3' in test:
+            self._main.TypeKeys("{F3}")
+        elif 'F4' in test:
+            self._main.TypeKeys("{F4}")
+        elif 'F6' in test:
+            self._main.TypeKeys("{F6}")
+        else:
+            for c in range(5):
+                try:
+                    self._get_left_treeview_ready()
+                    if not self._left_treeview.IsSelected(path):
+                        self._left_treeview.Select(path)
+                    else:
+                        break
+                except Exception:
+                    print('switch_left_menus Exception')
+                    self._bring_main_foreground()  
+                    time.sleep(0.2)
 
     def _bring_main_foreground(self):
         self._main.Minimize()
