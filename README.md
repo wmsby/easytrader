@@ -32,7 +32,7 @@
 * 支持通过 webserver 远程操作客户端
 * 支持命令行调用，方便其他语言适配
 * 支持 Python3, Linux / Win, 推荐使用 `Python3`
-* 有兴趣的可以加群 `556050652` 一起讨论
+* 有兴趣的可以加群 `556050652` 一起讨论 
 * 捐助:
 
 ![微信](http://7xqo8v.com1.z0.glb.clouddn.com/wx.png?imageView2/1/w/300/h/300)             ![支付宝](http://7xqo8v.com1.z0.glb.clouddn.com/zhifubao2.png?imageView2/1/w/300/h/300)
