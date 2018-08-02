@@ -13,6 +13,7 @@ from . import grid_data_get_strategy
 from . import helpers
 from . import pop_dialog_handler
 from .config import client
+from .log import log
 
 if not sys.platform.startswith("darwin"):
     import pywinauto
@@ -120,11 +121,20 @@ class ClientTrader(IClientTrader):
         
     # check top_window
     def _check_top_window(self):
-        """只需要3ms"""
+        """需要6ms"""
         c = 0
-        while c < 20 and self._app.top_window().handle != self._main_handle:
+        test_0 = self._main.wrapper_object()
+        test_1 = self._app.top_window().wrapper_object()
+        while c < 5 and test_1 != test_0:
             c += 1
-            self._app.top_window().close()
+            test_1.close()
+            test_1 = self._app.top_window().wrapper_object()
+            
+    def _close_prompt_windows(self):
+        """功能同_check_top_window, 需要2ms, 不太可靠"""
+        for w in self._app.windows(class_name="#32770"):
+            if "网上交易系统" not in w.window_text():
+                w.close()
             
     @property
     def broker_type(self):
