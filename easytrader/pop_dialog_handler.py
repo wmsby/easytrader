@@ -6,6 +6,8 @@ from . import exceptions
 class PopDialogHandler:
     def __init__(self, app, top_window=None):
         self._app = app
+        self._TISHI_CONTROL_ID = 1004
+        self._TISHIXINXI_CONTROL_ID = 1040
         if top_window is None:
             self._top_window = self._app.top_window()
         else:
@@ -16,7 +18,7 @@ class PopDialogHandler:
             self._submit_by_shortcut()
 
         elif "提示" in title:
-            content = self._extract_content(control_id=1004)
+            content = self._extract_content(control_id=self._TISHI_CONTROL_ID)
             self._submit_by_click()
             return {"message": content}
 
@@ -33,7 +35,7 @@ class PopDialogHandler:
                 res = test.window_text()
                 return res
             except Exception as e:
-                print('_extract_content', e)
+                log.warning('_extract_content: Exception {}'.format(e))
                 self._top_window = self._app.top_window()
             zzz = time.time()
             if (zzz-sss) < 0.1:
@@ -52,7 +54,7 @@ class PopDialogHandler:
                 self._top_window.TypeKeys("{ENTER}")
                 break
             except Exception as e:
-                print('PopDialog _submit_by_click', e)
+                log.warning('PopDialog _submit_by_click: Exception {}'.format(e))
                 self._top_window = self._app.top_window()
             zzz = time.time()
             if((zzz-sss)<0.1):
@@ -65,7 +67,7 @@ class PopDialogHandler:
                 self._top_window.type_keys("%Y")
                 break
             except Exception as e:
-                print('PopDialog _submit_by_shortcut', e)
+                log.warning('PopDialog _submit_by_shortcut: Exception {}'.format(e))
                 self._top_window = self._app.top_window()
             zzz = time.time()
             if((zzz-sss)<0.1):
@@ -78,7 +80,7 @@ class PopDialogHandler:
                 self._top_window.type_keys("%Y")
                 break
             except Exception as e:
-                print('PopDialog _submit_by_shortcut_yes', e)
+                log.warning('PopDialog _submit_by_shortcut_yes: Exception {}'.format(e))
                 self._top_window = self._app.top_window()
             zzz = time.time()
             if((zzz-sss)<0.1):
@@ -91,7 +93,7 @@ class PopDialogHandler:
                 self._top_window.type_keys("%N")
                 break
             except Exception as e:
-                print('PopDialog _submit_by_shortcut_no', e)
+                log.warning('PopDialog _submit_by_shortcut_no: Exception {}'.format(e))
                 self._top_window = self._app.top_window()
             zzz = time.time()
             if((zzz-sss)<0.1):
@@ -104,7 +106,7 @@ class PopDialogHandler:
                 self._top_window.close()
                 break
             except Exception as e:
-                print('PopDialog _close', e)
+                log.warning('PopDialog _close: Exception {}'.format(e))
                 self._top_window = self._app.top_window()
             zzz = time.time()
             if((zzz-sss)<0.1):
@@ -117,7 +119,7 @@ class TradePopDialogHandler(PopDialogHandler):
             self._submit_by_shortcut_yes()
 
         elif title == "提示信息":
-            content = self._extract_content(control_id=1040)
+            content = self._extract_content(control_id=self._TISHIXINXI_CONTROL_ID)
             if "超出涨跌停" in content:
                 self._submit_by_shortcut_no()
                 return {"failure": content}
@@ -128,7 +130,7 @@ class TradePopDialogHandler(PopDialogHandler):
                 self._submit_by_shortcut_yes()
 
         elif title == "提示":
-            content = self._extract_content(control_id=1004)
+            content = self._extract_content(control_id=self._TISHI_CONTROL_ID)
             if "成功" in content:
                 entrust_no = self._extract_entrust_id(content)
                 self._submit_by_click()
