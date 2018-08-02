@@ -585,21 +585,25 @@ class ClientTrader(IClientTrader):
         selects = self._wait_trade_showup(self._config.TRADE_MARKET_TYPE_CONTROL_ID, "ComboBox")
                  
         # 选择对应的下拉选项   
-        for i, text in enumerate(selects.texts()):
-            # skip 0 index, because 0 index is current select index
-            text = text.replace(u"即时", "")
-            if ttype in text:
-                # 如果不是默认选项，则选择下拉
-                if i != 0:
-                    selects.select(i - 1)
-                    
-                # 确认市价交易的价格出现!
-                self._wait_trade_showup(self._config.TRADE_PRICE_CONTROL_ID, "Edit") 
-                break
-        else:
-            log.warning("不支持对应的市价类型: {}, 将采用默认方式!".format(ttype))
-            # 确认市价交易的价格出现
-            self._wait_trade_showup(self._config.TRADE_PRICE_CONTROL_ID, "Edit") 
+        for c in range(3):
+            try:
+                for i, text in enumerate(selects.texts()):
+                    # skip 0 index, because 0 index is current select index
+                    text = text.replace(u"即时", "")
+                    if ttype in text:
+                        # 如果不是默认选项，则选择下拉
+                        if i != 0:
+                            selects.select(i - 1)
+
+                        # 确认市价交易的价格出现!
+                        self._wait_trade_showup(self._config.TRADE_PRICE_CONTROL_ID, "Edit") 
+                        break
+                else:
+                    log.warning("不支持对应的市价类型: {}, 将采用 最优五档成交剩余撤销 方式!".format(ttype))
+                    ttype = '最优五档成交剩余撤销'
+            except Exception as e:
+                log.warning("_set_market_trade_type: Exception {}".format(e))
+                time.sleep(0.1)
 
             
     def auto_ipo(self):
