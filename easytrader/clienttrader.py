@@ -471,9 +471,9 @@ class ClientTrader(IClientTrader):
                 log.warning('等待股东账号出现: retry...')
         # 提交
         if action == 'BUY':
-            self._main.TypeKeys(r'b')   
+            self._pwindow.TypeKeys(r'b')   
         elif action == 'SELL':
-            self._main.TypeKeys(r's')  
+            self._pwindow.TypeKeys(r's')  
         else:
             log.warning('_submit_trade error: action {}'.format(action))
         
