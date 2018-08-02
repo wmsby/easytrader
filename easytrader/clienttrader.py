@@ -400,10 +400,13 @@ class ClientTrader(IClientTrader):
             self._config.TRADE_PRICE_CONTROL_ID,
             easyutils.round_price_by_code(price, code),
         )
-        # 输入数量
-        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
         # 等待股票名称出现
         self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
+        # 等待股东账号出现
+        self._wait_account_showup()
+        # 输入数量
+        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
+
         
     def _click(self, control_id):
         for c in range(5):
@@ -445,8 +448,8 @@ class ClientTrader(IClientTrader):
             gaps = time.time() - sss
             if gaps < 0.03:
                 time.sleep(0.03-gaps)
-                    
-    def _submit_trade(self, action):
+                
+    def _wait_account_showup(self):   
         # 等待股东账号出现!
         for c in range(3):
             try:
@@ -469,11 +472,14 @@ class ClientTrader(IClientTrader):
             if (zzz-sss) < 0.03:
                 time.sleep(0.03-(zzz-sss))
                 log.warning('等待股东账号出现: retry...')
+                
+    def _submit_trade(self, action):
+
         # 提交
         if action == 'BUY':
-            self._main.TypeKeys(r'b')   
+            self._main.TypeKeys("{ENTER}")   
         elif action == 'SELL':
-            self._main.TypeKeys(r's')  
+            self._main.TypeKeys("{ENTER}") 
         else:
             log.warning('_submit_trade error: action {}'.format(action))
         
@@ -545,8 +551,20 @@ class ClientTrader(IClientTrader):
 
         :return: {'entrust_no': '委托单号'}
         """
-        self._set_market_trade_params(security, amount)
+        # self._set_market_trade_params(security, amount)
+        
+        code = security[-6:]
+        # 输入代码
+        self._type_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
+        # 等待股票代码出现
+        self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
+        # 等待股东账号出现
+        self._wait_account_showup()
+        # 选择委托类型
         self._set_market_trade_type(ttype)
+        # 输入数量
+        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))        
+        
         self._submit_trade(action)
         test = self._handle_pop_dialogs(handler_class=pop_dialog_handler.TradePopDialogHandler)
 
@@ -554,12 +572,14 @@ class ClientTrader(IClientTrader):
     
     def _set_market_trade_params(self, security, amount):
         code = security[-6:]
-
+        # 输入代码
         self._type_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
-
-        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
-        
+        # 等待股票代码出现
         self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
+        # 等待股东账号出现
+        self._wait_account_showup()
+        # 输入数量
+        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
         
     def _set_market_trade_type(self, ttype):
         """根据选择的市价交易类型选择对应的下拉选项"""     
