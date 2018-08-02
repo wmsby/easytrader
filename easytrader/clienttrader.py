@@ -400,12 +400,14 @@ class ClientTrader(IClientTrader):
             self._config.TRADE_PRICE_CONTROL_ID,
             easyutils.round_price_by_code(price, code),
         )
+
+        # 输入数量
+        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
+        
         # 等待股票名称出现
         self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
         # 等待股东账号出现
         self._wait_account_showup()
-        # 输入数量
-        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
 
         
     def _click(self, control_id):
@@ -476,23 +478,22 @@ class ClientTrader(IClientTrader):
     def _submit_trade(self, action):
 
         # 提交
-        if action == 'BUY':
-            self._main.TypeKeys("{ENTER}")   
-        elif action == 'SELL':
-            self._main.TypeKeys("{ENTER}") 
-        else:
-            log.warning('_submit_trade error: action {}'.format(action))
+#         if action == 'BUY':
+#             self._main.TypeKeys("{ENTER}")   
+#         elif action == 'SELL':
+#             self._main.TypeKeys("{ENTER}") 
+#         else:
+#             log.warning('_submit_trade error: action {}'.format(action))
         
-#         for c in range(5):
-#             try:
-#                 test = self._pwindow.window(control_id=self._config.TRADE_SUBMIT_CONTROL_ID, class_name="Button")
-#                 # test.wait("exists visible enabled", 0.05)
-#                 test.click()
-#                 break
-#             except Exception as e:
-#                 print("submit_click", e)
-#                 self._check_top_window()
-#                 time.sleep(0.1)
+        for c in range(3):
+            try:
+                test = self._pwindow.window(control_id=self._config.TRADE_SUBMIT_CONTROL_ID, class_name="Button")
+                test.click()
+                break
+            except Exception as e:
+                log.warning('submit_click: Exception {}...'.format(e))
+                self._check_top_window()
+                time.sleep(0.1)
                 
     def _type_keys(self, control_id, text):
         ttt = self._pwindow.window(control_id=control_id, class_name="Edit")
@@ -551,20 +552,12 @@ class ClientTrader(IClientTrader):
 
         :return: {'entrust_no': '委托单号'}
         """
-        # self._set_market_trade_params(security, amount)
+        # 输入交易参数
+        self._set_market_trade_params(security, amount)
         
-        code = security[-6:]
-        # 输入代码
-        self._type_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
-        # 等待股票代码出现
-        self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
-        # 等待股东账号出现
-        self._wait_account_showup()
         # 选择委托类型
         self._set_market_trade_type(ttype)
-        # 输入数量
-        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))        
-        
+
         self._submit_trade(action)
         test = self._handle_pop_dialogs(handler_class=pop_dialog_handler.TradePopDialogHandler)
 
@@ -574,12 +567,14 @@ class ClientTrader(IClientTrader):
         code = security[-6:]
         # 输入代码
         self._type_keys(self._config.TRADE_SECURITY_CONTROL_ID, code)
+
+        # 输入数量
+        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
+        
         # 等待股票代码出现
         self._wait_trade_showup(self._config.TRADE_SECURITY_NAME_ID, "Static")
         # 等待股东账号出现
         self._wait_account_showup()
-        # 输入数量
-        self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
         
     def _set_market_trade_type(self, ttype):
         """根据选择的市价交易类型选择对应的下拉选项"""     
