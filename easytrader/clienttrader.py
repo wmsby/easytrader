@@ -313,7 +313,7 @@ class ClientTrader(IClientTrader):
             else:
                 log.warning("读取cancel_entrusts grid失败...")
                 test = []
-              
+        self._check_top_window()
         return test
     
     def cancel_entrust(self, entrust_no):
