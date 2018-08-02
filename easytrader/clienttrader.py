@@ -344,16 +344,16 @@ class ClientTrader(IClientTrader):
         
         if atype == 'LIMIT' and action == 'BUY':
             # 限价买入
-            self.buy(security, price, amount)
+            return self.buy(security, price, amount)
         elif atype == 'LIMIT' and action == 'SELL':
             # 限价卖出
-            self.sell(security, price, amount)
+            return self.sell(security, price, amount)
         elif atype == 'MARKET' and action == 'BUY':
             # 市价买入
-            self.market_buy(security, amount, ttype=ttype)
+            return self.market_buy(security, amount, ttype=ttype)
         elif atype == 'MARKET' and action == 'SELL':
             # 市价卖出
-            self.market_sell(security, amount, ttype=ttype)
+            return self.market_sell(security, amount, ttype=ttype)
         else:
             log.warning('trade: 参数错误，skip trading')
             
@@ -698,6 +698,7 @@ class ClientTrader(IClientTrader):
                         log.warning('get_pop_dialog_title: {} retry...'.format(title))         
                 else:
                     log.warning('get_pop_dialog_title: 没弹出窗口...') 
+                    time.sleep(0.1)
             except Exception as e:
                 log.warning('pop_dialog: Exception {}...'.format(e)) 
                 time.sleep(0.1)
