@@ -680,6 +680,7 @@ class ClientTrader(IClientTrader):
     def _handle_pop_dialogs(
         self, handler_class=pop_dialog_handler.PopDialogHandler
     ):
+        io = 'a'
         for c in range(10):
             try:
                 topw_handle = self._main.PopupWindow() 
@@ -694,8 +695,9 @@ class ClientTrader(IClientTrader):
                             return result
                         else:
                             time.sleep(0.1)
+                            io = 'b'
                     else:
-                        log.warning('get_pop_dialog_title: {} retry...'.format(title))         
+                        log.warning('get_pop_dialog_title: {} retry...'.format(io))         
                 else:
                     log.warning('get_pop_dialog_title: 没弹出窗口...') 
                     time.sleep(0.1)
