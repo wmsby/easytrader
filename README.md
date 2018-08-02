@@ -7,6 +7,9 @@
 基于easytrader的二次开发
 
 
+Backup
+
+
 * 进行自动的程序化股票交易
 * 支持跟踪 `joinquant`, `ricequant` 的模拟交易
 * 支持跟踪 雪球组合 调仓
