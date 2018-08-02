@@ -372,20 +372,20 @@ class ClientTrader(IClientTrader):
         for c in range(2):
             self._check_top_window()
             self._switch_left_menus(["买入[F1]"])
-            return self.bs_trade(security, price, amount)
+            return self.bs_trade(security, price, amount, action='BUY')
             log.warning("buy {}: retry...".format(security))
 
     def sell(self, security, price, amount, **kwargs):
         for c in range(2):
             self._check_top_window()
             self._switch_left_menus(["卖出[F2]"])
-            return self.bs_trade(security, price, amount)
+            return self.bs_trade(security, price, amount, action='SELL')
             log.warning("sell {}: retry...".format(security))
 
-    def bs_trade(self, security, price, amount):
+    def bs_trade(self, security, price, amount, action):
         self._set_trade_params(security, price, amount)
         
-        self._submit_trade()
+        self._submit_trade(action)
         
         test = self._handle_pop_dialogs(handler_class=pop_dialog_handler.TradePopDialogHandler)
 
@@ -446,7 +446,7 @@ class ClientTrader(IClientTrader):
             if gaps < 0.03:
                 time.sleep(0.03-gaps)
                     
-    def _submit_trade(self):
+    def _submit_trade(self, action):
         # 等待股东账号出现!
         for c in range(3):
             try:
@@ -470,7 +470,12 @@ class ClientTrader(IClientTrader):
                 time.sleep(0.03-(zzz-sss))
                 log.warning('等待股东账号出现: retry...')
         # 提交
-        self._main.TypeKeys('{ENTER}')      
+        if action == 'BUY':
+            self._main.TypeKeys(r'b')   
+        elif action == 'SELL':
+            self._main.TypeKeys(r's')  
+        else:
+            log.warning('_submit_trade error: action {}'.format(action))
         
 #         for c in range(5):
 #             try:
@@ -509,7 +514,7 @@ class ClientTrader(IClientTrader):
         for c in range(2):
             self._check_top_window()
             self._switch_left_menus(["市价委托", "买入"])
-            return self.bs_market_trade(security, amount, ttype)
+            return self.bs_market_trade(security, amount, 'BUY', ttype)
             log.warning("market_buy {}: retry...".format(security))
 
     def market_sell(self, security, amount, ttype=u'最优五档成交剩余撤销', **kwargs):
@@ -526,10 +531,10 @@ class ClientTrader(IClientTrader):
         for c in range(2):
             self._check_top_window()
             self._switch_left_menus(["市价委托", "卖出"])
-            return self.bs_market_trade(security, amount, ttype)
+            return self.bs_market_trade(security, amount, 'SELL', ttype)
             log.warning("market_sell {}: retry...".format(security))
 
-    def bs_market_trade(self, security, amount, ttype=None, **kwargs):
+    def bs_market_trade(self, security, amount, action, ttype=None, **kwargs):
         """
         市价交易
         :param security: 六位证券代码
@@ -542,7 +547,7 @@ class ClientTrader(IClientTrader):
         """
         self._set_market_trade_params(security, amount)
         self._set_market_trade_type(ttype)
-        self._submit_trade()
+        self._submit_trade(action)
         test = self._handle_pop_dialogs(handler_class=pop_dialog_handler.TradePopDialogHandler)
 
         return test
