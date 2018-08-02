@@ -331,14 +331,14 @@ class ClientTrader(IClientTrader):
         else:
             return {"message": "委托单状态错误不能撤单, 该委托单可能已经成交或者已撤"}
 
-    def trade(self, action, security, price, amount, atype='MARKET', ptype='最优五档成交剩余撤销', **kwargs):
+    def trade(self, security, amount, price, action, atype='MARKET', ttype='最优五档成交剩余撤销', **kwargs):
         """
-        action   : str, 'BUY' or 'SELL'
         security : str, 股票代码
-        price    : str, 交易价格
         amount   : str, 交易数量
+        price    : str, 交易价格
+        action   : str, 'BUY' or 'SELL'
         atype    : str, 'MARKET' or 'LIMIT'
-        ptype    : str, 委托类型
+        ttype    : str, 委托类型
         """
         a = time.time()
         
@@ -350,10 +350,10 @@ class ClientTrader(IClientTrader):
             self.sell(security, price, amount)
         elif atype == 'MARKET' and action == 'BUY':
             # 市价买入
-            self.market_buy(self, security, amount, ttype=ptype)
+            self.market_buy(security, amount, ttype=ttype)
         elif atype == 'MARKET' and action == 'SELL':
             # 市价卖出
-            self.market_sell(self, security, amount, ttype=ptype)
+            self.market_sell(security, amount, ttype=ttype)
         else:
             log.warning('trade: 参数错误，skip trading')
             
@@ -471,9 +471,9 @@ class ClientTrader(IClientTrader):
                 log.warning('等待股东账号出现: retry...')
         # 提交
         if action == 'BUY':
-            self._pwindow.TypeKeys(r'b')   
+            self._main.TypeKeys(r'b')   
         elif action == 'SELL':
-            self._pwindow.TypeKeys(r's')  
+            self._main.TypeKeys(r's')  
         else:
             log.warning('_submit_trade error: action {}'.format(action))
         
