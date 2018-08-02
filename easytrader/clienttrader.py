@@ -699,7 +699,7 @@ class ClientTrader(IClientTrader):
                     else:
                         log.warning('get_pop_dialog_title: {} retry...'.format(title))         
                 else:
-                    log.warning('get_pop_dialog_title: 没弹出窗口...'.format(io)) 
+                    log.warning('get_pop_dialog_title: 没弹出窗口{}...'.format(io)) 
                     time.sleep(0.1)
             except Exception as e:
                 log.warning('pop_dialog: Exception {}...'.format(e)) 
