@@ -331,7 +331,7 @@ class ClientTrader(IClientTrader):
         else:
             return {"message": "委托单状态错误不能撤单, 该委托单可能已经成交或者已撤"}
 
-    def trade(self, security, amount, price, action, atype='MARKET', ttype='最优五档成交剩余撤销', **kwargs):
+    def trade(self, security, amount, action, atype, price=0, ttype='最优五档成交剩余撤销', **kwargs):
         """
         security : str, 股票代码
         amount   : str, 交易数量
