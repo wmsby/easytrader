@@ -28,7 +28,7 @@ class PopDialogHandler:
             return {"message": "unknown message"}
 
     def _extract_content(self, control_id):
-        for c in range(20):
+        for c in range(10):
             sss = time.time()
             try:
                 test = self._top_window.window(control_id=control_id, class_name='Static')
@@ -37,6 +37,8 @@ class PopDialogHandler:
             except Exception as e:
                 log.warning('_extract_content: Exception {}'.format(e))
                 self._top_window = self._app.top_window()
+                
+            log.warning('_extract_content: retry...')
             zzz = time.time()
             if (zzz-sss) < 0.1:
                 time.sleep(0.1-(zzz-sss))
