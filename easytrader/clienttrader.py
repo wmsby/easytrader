@@ -470,7 +470,7 @@ class ClientTrader(IClientTrader):
                 time.sleep(0.03-(zzz-sss))
                 log.warning('等待股东账号出现: retry...')
         # 提交
-        self._pwindow.TypeKeys('{ENTER}')      
+        self._main.TypeKeys('{ENTER}')      
         
 #         for c in range(5):
 #             try:
