@@ -342,16 +342,16 @@ class ClientTrader(IClientTrader):
         """
         a = time.time()
         
-        if atype = 'LIMIT' and action = 'BUY':
+        if atype == 'LIMIT' and action == 'BUY':
             # 限价买入
             self.buy(security, price, amount)
-        elif atype = 'LIMIT' and action = 'SELL':
+        elif atype == 'LIMIT' and action == 'SELL':
             # 限价卖出
             self.sell(security, price, amount)
-        elif atype = 'MARKET' and action = 'BUY':
+        elif atype == 'MARKET' and action == 'BUY':
             # 市价买入
             self.market_buy(self, security, amount, ttype=ptype)
-        elif atype = 'MARKET' and action = 'SELL':
+        elif atype == 'MARKET' and action == 'SELL':
             # 市价卖出
             self.market_sell(self, security, amount, ttype=ptype)
         else:
