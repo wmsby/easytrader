@@ -49,6 +49,10 @@ class CopyStrategy(BaseStrategy):
         count_2 = 0
         count_3 = 0
         while True:
+            # 只有读取成功两次或失败两次才跳出循环
+            if count_1 == 2 or count_2 == 2 or count_3 == 2:
+                break 
+                
             content = ''
             try:
                 # grid.RightClick(coords=(50, 50))
@@ -56,8 +60,11 @@ class CopyStrategy(BaseStrategy):
 
                 # grid.wait('ready', 0.2)
                 # grid.TypeKeys(r"^a")
+                
+                pywinauto.clipboard.EmptyClipboard()
+                time.sleep(0.01)
                 grid.TypeKeys(r"^c")
-                time.sleep(0.05)
+                time.sleep(0.01)
                 content = pywinauto.clipboard.GetData()
                 if '\n' in content:    # 读取成功, 直接跳出
                     break
@@ -73,10 +80,6 @@ class CopyStrategy(BaseStrategy):
                 count_3 += 1
                 time.sleep(0.2)
                 log.warning("{}, retry ......".format(e))  
-                
-            # 只有读取成功两次或失败两次才跳出循环
-            if count_1 == 2 or count_2 == 2 or count_3 == 2:
-                break 
                 
         if content == '':
             return None
