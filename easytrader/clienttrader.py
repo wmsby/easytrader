@@ -152,41 +152,60 @@ class ClientTrader(IClientTrader):
 
     @functools.lru_cache()
     def _get_left_treeview_ready(self):
-        for c in range(20):
+        for c in range(2):
             try:
                 self._left_treeview.wait("ready", 1)
                 break
             except:
-                print('_left_treeview.wait Exception')
+                log.warning('_left_treeview.wait Exception')
                 self._bring_main_foreground()
                 self._check_top_window()
             
     def _switch_left_menus(self, path):
+        def left_menus_check():
+            try:
+                if self._left_treeview.IsSelected(path):
+                    return True
+                else:
+                    return False
+            except Exception as e:
+                log.warning('_switch_left_menus: {}'.format(e))
+                self._get_left_treeview_ready()
+                return False
+            
         test = ''.join(path)
-        if 'F1' in test:
-            self._main.TypeKeys("{F1}")
-        elif 'F2' in test:
-            self._main.TypeKeys("{F2}")
-        elif 'F3' in test:
-            self._main.TypeKeys("{F3}")
-        elif 'F4' in test and '资金股' in test:
-            self._main.TypeKeys("{F4}")
-        elif 'F5' in test:
-            self._main.TypeKeys("{F5}")
-        elif 'F6' in test:
-            self._main.TypeKeys("{F6}")
-        else:
-            for c in range(5):
+        for c in range(2):
+            if 'F1' in test:
+                self._main.TypeKeys("{F1}")
+                if left_menus_check():
+                    break
+            elif 'F2' in test:
+                self._main.TypeKeys("{F2}")
+                if left_menus_check():
+                    break
+            elif 'F3' in test:
+                self._main.TypeKeys("{F3}")
+                if left_menus_check():
+                    break
+            elif 'F4' in test and '资金股' in test:
+                self._main.TypeKeys("{F4}")
+                if left_menus_check():
+                    break
+            elif 'F5' in test:
+                self._main.TypeKeys("{F5}")
+                if left_menus_check():
+                    break
+            elif 'F6' in test:
+                self._main.TypeKeys("{F6}")
+                if left_menus_check():
+                    break
+            else:
                 try:
-                    self._get_left_treeview_ready()
-                    if not self._left_treeview.IsSelected(path):
-                        self._left_treeview.Select(path)
-                    else:
-                        break
+                    self._left_treeview.Select(path)                   
                 except Exception:
-                    print('switch_left_menus Exception')
-                    self._bring_main_foreground()  
-                    time.sleep(0.2)
+                    pass
+                if left_menus_check():
+                    break 
 
     def _bring_main_foreground(self):
         self._main.Minimize()
