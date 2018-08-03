@@ -3,6 +3,7 @@ import pywinauto
 import pywinauto.clipboard
 import time
 from . import clienttrader
+import pandas as pd
 
 
 class HTClientTrader(clienttrader.BaseLoginClientTrader):
