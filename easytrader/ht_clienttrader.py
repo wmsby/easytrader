@@ -20,9 +20,12 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
                 break
             except Exception:
                 print('login again')
+                
                 time.sleep(0.5)
-                for i in pywinauto.findwindows.find_windows(title_re = r'用户登录', class_name='#32770'):
-                    pywinauto.Application().connect(handle=i).kill()  
+                self._close_app(exe_path)
+                # for i in pywinauto.findwindows.find_windows(title_re = r'用户登录', class_name='#32770'):
+                #    pywinauto.Application().connect(handle=i).kill()  
+                
                 re = False
         return re
                 
@@ -30,10 +33,11 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
         # 关闭一切软件，从头登录，软件死机时使用，至多尝试3次
         for i in range(3):
             try:
-                for i in pywinauto.findwindows.find_windows(title_re = r'用户登录', class_name='#32770'):
-                    pywinauto.Application().connect(handle=i).kill() 
-                for i in pywinauto.findwindows.find_windows(title_re = r'网上股票交易系统'):
-                    pywinauto.Application().connect(handle=i).kill() 
+#                 for i in pywinauto.findwindows.find_windows(title_re = r'用户登录', class_name='#32770'):
+#                     pywinauto.Application().connect(handle=i).kill() 
+#                 for i in pywinauto.findwindows.find_windows(title_re = r'网上股票交易系统'):
+#                     pywinauto.Application().connect(handle=i).kill() 
+                self._close_app(exe_path)
                 self.login_basic(user, password, exe_path, comm_password, **kwargs)
                 re = True
                 break
@@ -110,6 +114,10 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
 
         # 关闭其它窗口
         self._check_top_window()
+    
+    # 关闭应用
+    def _close_app(self, exe_path):
+        pywinauto.Application().connect(path=exe_path).kill()
         
     @property
     def balance(self):
