@@ -229,3 +229,10 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
             new_list.append(ii)    
             
         return new_list
+
+    
+    def gz_nhg(self, security, price, amount, **kwargs):
+        """131810：amount 必须为10的倍数"""
+        return self.trade(security, amount, 'SELL', 'LIMIT', price=price)
+    
+    
