@@ -425,8 +425,8 @@ class ClientTrader(IClientTrader):
     def _wait_trade_showup(self, control_id, class_name):
         """class_name: "Static", "Edit", "ComboBox" """
         flag = False
-        time.sleep(0.03)
-        for c in range(3):   
+        time.sleep(0.02)
+        for c in range(5):   
             try:
                 sss = time.time()
                 for i in self._pwindow.Children():
@@ -443,7 +443,7 @@ class ClientTrader(IClientTrader):
                         return i 
                     
                 if flag is False:
-                    log.warning('_wait_trade_showup: retry...')
+                    log.warning('_wait_trade_showup: retry {} {}...'.format(control_id, class_name))
             except Exception as e:
                 log.warning('_wait_trade_showup: Exception...{}'.format(e))
                 
@@ -680,7 +680,7 @@ class ClientTrader(IClientTrader):
     def _handle_pop_dialogs(
         self, handler_class=pop_dialog_handler.PopDialogHandler
     ):
-        io = 'a'
+        ii = 'a'
         for c in range(10):
             try:
                 topw_handle = self._main.PopupWindow() 
@@ -694,16 +694,16 @@ class ClientTrader(IClientTrader):
                         if result:
                             return result
                         else:
-                            time.sleep(0.1)
+                            time.sleep(0.2)
                             io = 'b'
                     else:
                         log.warning('get_pop_dialog_title: {} retry...'.format(title))         
                 else:
-                    log.warning('get_pop_dialog_title: 没弹出窗口{}...'.format(io)) 
-                    time.sleep(0.1)
+                    log.warning('get_pop_dialog_title: 没弹出窗口{}...'.format(ii)) 
+                    time.sleep(0.2)
             except Exception as e:
                 log.warning('pop_dialog: Exception {}...'.format(e)) 
-                time.sleep(0.1)
+                time.sleep(0.2)
                 
         return {"success???": "不应该出现这里"}          
 
