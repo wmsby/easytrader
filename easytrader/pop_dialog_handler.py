@@ -66,7 +66,7 @@ class PopDialogHandler:
         for c in range(10):
             sss = time.time()
             try:
-                self._top_window.type_keys("%Y")
+                self._top_window.type_keys("%y")
                 break
             except Exception as e:
                 log.warning('PopDialog _submit_by_shortcut: Exception {}'.format(e))
@@ -79,7 +79,7 @@ class PopDialogHandler:
         for c in range(10):
             sss = time.time()
             try:
-                self._top_window.type_keys("%Y")
+                self._top_window.type_keys("%y")
                 break
             except Exception as e:
                 log.warning('PopDialog _submit_by_shortcut_yes: Exception {}'.format(e))
@@ -92,7 +92,7 @@ class PopDialogHandler:
         for c in range(10):
             sss = time.time()
             try:
-                self._top_window.type_keys("%N")
+                self._top_window.type_keys("%n")
                 break
             except Exception as e:
                 log.warning('PopDialog _submit_by_shortcut_no: Exception {}'.format(e))
