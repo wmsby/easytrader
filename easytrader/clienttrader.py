@@ -229,8 +229,9 @@ class ClientTrader(IClientTrader):
 
     @property
     def balance(self):
-        self._switch_left_menus(self._config.BALANCE_MENU_PATH)
-        return self._get_balance_from_statics()
+        for c in range(2):
+            self._switch_left_menus(self._config.BALANCE_MENU_PATH)
+            return self._get_balance_from_statics()
 
     def _get_balance_from_statics(self):
         result = {}
