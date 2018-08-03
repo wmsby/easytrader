@@ -169,7 +169,8 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
 
     @property
     def balance(self):
-        for c in range(10):
+        self._check_top_window()
+        for c in range(5):
             self._switch_left_menus(["查询[F4]", "资金股份"])
             test = self._get_grid_data(self._config.BALANCE_GRID_CONTROL_ID)
             if isinstance(test, pd.DataFrame):
@@ -190,6 +191,41 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
             bala = {}
             
         return bala
-#         self._switch_left_menus(self._config.BALANCE_MENU_PATH)
 
-#         return self._get_grid_data(self._config.BALANCE_GRID_CONTROL_ID)
+    @property
+    def position(self):
+        self._check_top_window()
+        for c in range(2):
+            self._switch_left_menus(["查询[F4]", "资金股票"])
+            test = self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
+            if isinstance(test, pd.DataFrame):
+                test = test.to_dict("records") if len(test) > 0 else []
+                break
+            else:
+                log.warning("读取position grid失败...")
+                test = []
+                
+        # 统一关键字段输出
+        new_list = []
+        for i in test: 
+            ii = {}
+            for k, v in i.items():
+                if '代码' in k:
+                    ii['证券代码'] = v
+                elif '名称' in k:
+                    ii['证券名称'] = v
+                elif '当前持仓' in k:   # 当前持仓才是真正的股票余额
+                    ii['股票余额'] = v
+                elif '可用' in k:
+                    ii['可用余额'] = v
+                elif '成本价' in k:
+                    ii['成本价'] = v
+                elif '市价' in k:
+                    ii['市价'] = v
+                elif '市值' in k:
+                    ii['市值'] = v
+                else:
+                    ii[k] = v
+            new_list.append(ii)    
+            
+        return new_list
