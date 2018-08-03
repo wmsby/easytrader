@@ -112,15 +112,17 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
         
     @property
     def balance(self):
-        self._switch_left_menus(self._config.BALANCE_MENU_PATH)
-        return self._get_balance_from_statics()
+        self._check_top_window()
+        for c in range(2):
+            self._switch_left_menus(self._config.BALANCE_MENU_PATH)
+            return self._get_balance_from_statics()
 
     def _get_balance_from_statics(self):
         result = {}
         for key, control_id in self._config.BALANCE_CONTROL_ID_GROUP.items():
             ww = self._pwindow.window(control_id=control_id, class_name="Static")
             count = 0
-            for c in range(100):
+            for c in range(20):
                 try:
                     test = float(ww.window_text())
                     # 如果股票市值为0, 要多试一下!
@@ -141,6 +143,7 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
         return bala
     
     def _get_balance_after_login(self):
+        self._check_top_window()
         self._switch_left_menus(self._config.BALANCE_MENU_PATH)
         result = {}
         for key, control_id in self._config.BALANCE_CONTROL_ID_GROUP.items():
@@ -165,6 +168,45 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
             bala['ky_cash'] = result['可用金额']
             bala['kq_cash'] = result['可取金额']
         return bala
+
+    @property
+    def position(self):
+        self._check_top_window()
+        for c in range(2):
+            self._switch_left_menus(["查询[F4]", "资金股票"])
+            test = self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
+            if isinstance(test, pd.DataFrame):
+                test = test.to_dict("records") if len(test) > 0 else []
+                break
+            else:
+                log.warning("读取position grid失败...")
+                test = []
+                
+        # 统一关键字段输出
+        new_list = []
+        for i in test: 
+            ii = {}
+            for k, v in i.items():
+                if '代码' in k:
+                    ii['证券代码'] = v
+                elif '名称' in k:
+                    ii['证券名称'] = v
+                elif '股' in k and '余额' in k:   
+                    ii['股票余额'] = v
+                elif '可用' in k:
+                    ii['可用余额'] = v
+                elif '成本价' in k:
+                    ii['成本价'] = v
+                elif '市价' in k:
+                    ii['市价'] = v
+                elif '市值' in k:
+                    ii['市值'] = v
+                else:
+                    ii[k] = v
+            new_list.append(ii)  
+            
+        return new_list
+    
     
     def gz_nhg(self, security, price, amount, **kwargs):
         """131810：amount 必须为10的倍数"""
