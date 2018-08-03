@@ -426,7 +426,7 @@ class ClientTrader(IClientTrader):
     def _wait_trade_showup(self, control_id, class_name):
         """class_name: "Static", "Edit", "ComboBox" """
         flag = False
-        time.sleep(0.02)
+        time.sleep(0.05)
         for c in range(5):   
             try:
                 sss = time.time()
@@ -449,12 +449,12 @@ class ClientTrader(IClientTrader):
                 log.warning('_wait_trade_showup: Exception...{}'.format(e))
                 
             gaps = time.time() - sss
-            if gaps < 0.03:
-                time.sleep(0.03-gaps)
+            if gaps < 0.1:
+                time.sleep(0.1-gaps)
                 
     def _wait_account_showup(self):   
         # 等待股东账号出现!
-        for c in range(3):
+        for c in range(5):
             try:
                 sss = time.time()
                 selects = self._main.window(
@@ -472,8 +472,8 @@ class ClientTrader(IClientTrader):
                 log.warning('等待股东账号出现: Exception...{}'.format(e))
                 
             zzz = time.time()
-            if (zzz-sss) < 0.03:
-                time.sleep(0.03-(zzz-sss))
+            if (zzz-sss) < 0.1:
+                time.sleep(0.1-(zzz-sss))
                 log.warning('等待股东账号出现: retry...')
                 
     def _submit_trade(self, action):
