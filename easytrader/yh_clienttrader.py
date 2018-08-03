@@ -34,16 +34,14 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
                 break
             except Exception:
                 print('login again')
-                self.close_all()
+                self._close_app(exe_path)
                 time.sleep(0.5)
                 re = False
         return re
     
-    def close_all(self):
-        for i in pywinauto.findwindows.find_windows(title_re = r'用户登录', class_name='#32770'):
-            pywinauto.Application().connect(handle=i).kill()  
-        for i in pywinauto.findwindows.find_windows(title_re = r'网上股票交易系统'):
-            pywinauto.Application().connect(handle=i).kill() 
+    # 关闭应用
+    def _close_app(self, exe_path):
+        pywinauto.Application().connect(path=exe_path).kill()
 
     def login_basic(self, user, password, exe_path, comm_password=None, **kwargs):
         """
