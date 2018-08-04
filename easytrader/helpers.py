@@ -99,16 +99,47 @@ def recognize_verify_code(image_path, broker="ht"):
     return default_verify_code_detect(image_path)
 
 
-def detect_yh_client_result(image_path):
-    """封装了tesseract的识别，部署在阿里云上，服务端源码地址为： https://github.com/shidenggui/yh_verify_code_docker"""
-    api = "http://yh.ez.shidenggui.com:5000/yh_client"
-    with open(image_path, "rb") as f:
-        rep = requests.post(api, files={"image": f})
-    if rep.status_code != 201:
-        error = rep.json()["message"]
-        raise exceptions.TradeError("request {} error: {}".format(api, error))
-    return rep.json()["result"]
+# def detect_yh_client_result(image_path):
+#     """封装了tesseract的识别，部署在阿里云上，服务端源码地址为： https://github.com/shidenggui/yh_verify_code_docker"""
+#     api = "http://yh.ez.shidenggui.com:5000/yh_client"
+#     with open(image_path, "rb") as f:
+#         rep = requests.post(api, files={"image": f})
+#     if rep.status_code != 201:
+#         error = rep.json()["message"]
+#         raise exceptions.TradeError("request {} error: {}".format(api, error))
+#     return rep.json()["result"]
 
+def detect_yh_client_result(image_path):
+    from PIL import Image, ImageEnhance
+    
+    img = Image.open(image_path)
+    img = ImageEnhance.Contrast(img).enhance(2) 
+    img = img.convert("L")  # 灰度化
+
+    return invoke_tesseract_to_recognize(img)
+
+
+def invoke_tesseract_to_recognize(img):
+    import pytesseract
+    try:
+        res = pytesseract.image_to_string(img, config="--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789")
+    except FileNotFoundError:
+        raise Exception('tesseract 未安装，请至 https://github.com/tesseract-ocr/tesseract/wiki 查看安装教程')
+    
+    valid_chars = re.findall('[0-9a-z]', res, re.IGNORECASE)
+    return ''.join(valid_chars)
+
+# def invoke_tesseract_to_recognize(img):
+#     import pytesseract
+
+#     try:
+#         res = pytesseract.image_to_string(img)
+#     except FileNotFoundError:
+#         raise Exception(
+#             "tesseract 未安装，请至 https://github.com/tesseract-ocr/tesseract/wiki 查看安装教程"
+#         )
+#     valid_chars = re.findall("[0-9a-z]", res, re.IGNORECASE)
+#     return "".join(valid_chars)
 
 def input_verify_code_manual(image_path):
     from PIL import Image
@@ -149,17 +180,17 @@ def detect_gf_result(image_path):
     return invoke_tesseract_to_recognize(med_res)
 
 
-def invoke_tesseract_to_recognize(img):
-    import pytesseract
+# def invoke_tesseract_to_recognize(img):
+#     import pytesseract
 
-    try:
-        res = pytesseract.image_to_string(img)
-    except FileNotFoundError:
-        raise Exception(
-            "tesseract 未安装，请至 https://github.com/tesseract-ocr/tesseract/wiki 查看安装教程"
-        )
-    valid_chars = re.findall("[0-9a-z]", res, re.IGNORECASE)
-    return "".join(valid_chars)
+#     try:
+#         res = pytesseract.image_to_string(img)
+#     except FileNotFoundError:
+#         raise Exception(
+#             "tesseract 未安装，请至 https://github.com/tesseract-ocr/tesseract/wiki 查看安装教程"
+#         )
+#     valid_chars = re.findall("[0-9a-z]", res, re.IGNORECASE)
+#     return "".join(valid_chars)
 
 
 def get_mac():
