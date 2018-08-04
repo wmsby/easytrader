@@ -88,7 +88,7 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
                 logie['确定(&Y)'].click()
                 # 等待登录界面关闭
                 try:
-                    logie.wait_not('exists visible', timeout=30, retry_interval=None)
+                    logie.wait_not('exists visible', timeout=10, retry_interval=None)
                     break
                 except:
                     for w in self._app.windows(class_name="#32770"):
