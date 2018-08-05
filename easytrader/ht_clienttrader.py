@@ -4,7 +4,7 @@ import pywinauto.clipboard
 import time
 from . import clienttrader
 import pandas as pd
-
+from .log import log
 
 class HTClientTrader(clienttrader.BaseLoginClientTrader):
     @property
