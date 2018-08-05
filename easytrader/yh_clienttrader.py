@@ -149,7 +149,7 @@ class YHClientTrader(clienttrader.BaseLoginClientTrader):
         pos = i.Rectangle()
         pos.right = int(pos.left + (pos.right-pos.left)*4/3)
         file_path = tempfile.mktemp()
-        test.capture_as_image(pos).save(file_path, "jpeg")
+        test.capture_as_image(pos).save(file_path, "bmp")
 
         verify_code = helpers.recognize_verify_code(file_path, "yh_client")
         res = "".join(re.findall("\d+", verify_code))
