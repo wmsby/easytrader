@@ -7,7 +7,7 @@ import pandas as pd
 from . import clienttrader
 from . import grid_data_get_strategy
 from . import helpers
-
+from .log import log
 
 class YHClientTrader(clienttrader.BaseLoginClientTrader):
 #     def __init__(self):
