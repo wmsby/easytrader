@@ -219,6 +219,9 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
     
     def gz_nhg(self, security, price, amount, **kwargs):
         """131810：amount 必须为10的倍数"""
-        self._switch_left_menus(["债券回购", "融券回购(逆回购)"])
-        return self.bs_trade(security, price, amount, 'SELL')
+        for c in range(2):
+            self._check_top_window()
+            self._switch_left_menus(["债券回购", "融券回购(逆回购)"])
+            return self.bs_trade(security, price, amount, 'SELL')
+            log.warning("国债逆回购 {} {} {}: retry...".format(security, price, amount))
     
