@@ -196,13 +196,13 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
         for i in test: 
             ii = {}
             for k, v in i.items():
-                if '代码' in k:
+                if '证券代码' in k:
                     ii['证券代码'] = v
-                elif '名称' in k:
+                elif '证券名称' in k:
                     ii['证券名称'] = v
-                elif '股' in k and '余额' in k:   
+                elif '当前持仓' in k:   # 当前持仓才是真正的股票余额
                     ii['股票余额'] = v
-                elif '可用' in k:
+                elif '可用余额' in k:
                     ii['可用余额'] = v
                 elif '成本价' in k:
                     ii['成本价'] = v
@@ -212,7 +212,7 @@ class HTClientTrader(clienttrader.BaseLoginClientTrader):
                     ii['市值'] = v
                 else:
                     ii[k] = v
-            new_list.append(ii)  
+            new_list.append(ii)    
             
         return new_list
     
