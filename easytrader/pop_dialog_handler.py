@@ -2,6 +2,7 @@
 import re
 import time
 from . import exceptions
+from .log import log
 
 class PopDialogHandler:
     def __init__(self, app, top_window=None):
