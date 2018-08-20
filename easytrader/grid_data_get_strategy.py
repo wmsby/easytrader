@@ -62,9 +62,9 @@ class CopyStrategy(BaseStrategy):
                 # grid.TypeKeys(r"^a")
                 
                 pywinauto.clipboard.EmptyClipboard()
-                time.sleep(0.03)
+                time.sleep(0.05)
                 grid.TypeKeys(r"^c")
-                time.sleep(0.03)
+                time.sleep(0.05)
                 content = pywinauto.clipboard.GetData()
                 if '\n' in content:    # 读取成功, 直接跳出
                     break
